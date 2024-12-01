@@ -13,17 +13,18 @@ intents.message_content = True
 intents.members = True
 intents.presences = True
 
-bot = commands.Bot(command_prefix="/",intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
 
 
 @bot.event
 async def on_ready():
-    await bot.add_cog(pi_manager(bot, config))
-    await bot.add_cog(am3am4(bot, config))
-    await bot.add_cog(repost(bot, config))
+    ids = [discord.Object(id) for id in config.GetRunServerID()]
+    await bot.add_cog(pi_manager(bot, config), guilds=ids)
+    await bot.add_cog(am3am4(bot, config), guilds=ids)
+    await bot.add_cog(repost(bot, config), guilds=ids)
     for id in config.GetRunServerID():
         slash = await bot.tree.sync(guild=discord.Object(id))
-        print(f'已經以 {bot.user} 登入')
         print(f'已載入 {len(slash)} 個斜線指令')
+    print(f'已經以 {bot.user} 登入')
 
 bot.run(config.GetDcToken())
