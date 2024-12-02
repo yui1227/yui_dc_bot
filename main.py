@@ -1,7 +1,6 @@
 import discord
 from config import Config
 from discord.ext import commands
-from discord.interactions import Interaction
 from cogs.pi_manager import pi_manager
 from cogs.am3am4 import am3am4
 from cogs.repost import repost
