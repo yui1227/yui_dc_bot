@@ -1,32 +1,30 @@
 from discord.ext import commands
 from wakeonlan import send_magic_packet
 from discord.interactions import Interaction
-from config import Config
-from discord.ext.commands import Bot
-from discord import app_commands, Embed
+from discord import app_commands, Embed, Object
 import discord
 import psutil
 import datetime
+from yuidcbot import YuiDcBot
 
 
 class pi_manager(commands.Cog):
-    def __init__(self, bot: Bot, config: Config):
+    def __init__(self, bot: YuiDcBot):
         self.bot = bot
-        self.config = config
 
     @app_commands.command(name="電腦開機", description="開電腦")
     async def openpc(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
-        if interaction.user.id != self.config.GetAuthorId():
+        if interaction.user.id != self.bot.config.GetAuthorId():
             await interaction.followup.send("你不是作者，不能開:P", ephemeral=True)
             return
         await interaction.followup.send("正在嘗試開電腦...", ephemeral=True)
-        send_magic_packet(self.config.GetPCMAC())
+        send_magic_packet(self.bot.config.GetPCMAC())
 
     @app_commands.command(name='status', description="查看機器人狀態")
     async def status(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
-        embed = Embed(title='機器人狀態')
+        embed = Embed(title='機器人狀態3')
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         uptime = datetime.datetime.now()-datetime.datetime.fromtimestamp(psutil.boot_time())
         embed.add_field(name="機器人名稱", value=f"{self.bot.user.name}")
@@ -40,3 +38,8 @@ class pi_manager(commands.Cog):
         embed.add_field(
             name="空間使用率", value=f"""{psutil.disk_usage("/").percent} %""")
         await interaction.followup.send(embed=embed)
+
+
+async def setup(bot: YuiDcBot):
+    ids = [Object(id) for id in bot.config.GetRunServerID()]
+    await bot.add_cog(pi_manager(bot), guilds=ids)

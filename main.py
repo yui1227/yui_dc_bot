@@ -1,29 +1,28 @@
-import discord
-from config import Config
-from discord.ext import commands
-from cogs.pi_manager import pi_manager
-from cogs.am3am4 import am3am4
-from cogs.repost import repost
+from yuidcbot import YuiDcBot
+import asyncio
+from discord.interactions import Interaction
+from discord import Object
 
-config = Config()
-
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
-intents.presences = True
-
-bot = commands.Bot(command_prefix="/", intents=intents)
+bot = YuiDcBot()
 
 
-@bot.event
-async def on_ready():
-    ids = [discord.Object(id) for id in config.GetRunServerID()]
-    await bot.add_cog(pi_manager(bot, config), guilds=ids)
-    await bot.add_cog(am3am4(bot, config), guilds=ids)
-    await bot.add_cog(repost(bot, config), guilds=ids)
-    for id in config.GetRunServerID():
-        slash = await bot.tree.sync(guild=discord.Object(id))
-        print(f'已載入 {len(slash)} 個斜線指令')
-    print(f'已經以 {bot.user} 登入')
+@bot.tree.command(name="reload", description="重整模組", guilds=[Object(id) for id in bot.config.GetRunServerID()])
+async def reload(interaction: Interaction):
+    await interaction.response.defer(ephemeral=True)
+    if interaction.user.id != bot.config.GetAuthorId():
+        await interaction.followup.send("你不是作者，不能開:P", ephemeral=True)
+        return
+    await interaction.followup.send("正在重整模組...", ephemeral=True)
+    for cogs in bot.cog_list:
+        await bot.reload_extension(cogs)
+    await interaction.followup.send("重整模組完畢", ephemeral=True)
 
-bot.run(config.GetDcToken())
+
+async def main():
+    async with bot:
+        for cogs in bot.cog_list:
+            await bot.load_extension(cogs)
+        await bot.start(bot.config.GetDcToken())
+
+if __name__ == "__main__":
+    asyncio.run(main())

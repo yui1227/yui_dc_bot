@@ -1,8 +1,7 @@
 from discord.ext import commands, tasks
 import datetime
-from config import Config
-from discord.ext.commands import Bot
-from discord import File
+from discord import File, Object
+from yuidcbot import YuiDcBot
 
 utcp8 = datetime.timezone(datetime.timedelta(hours=8))
 
@@ -11,9 +10,8 @@ am4 = datetime.time(hour=4, tzinfo=utcp8)
 
 
 class am3am4(commands.Cog):
-    def __init__(self, bot: Bot, config: Config):
+    def __init__(self, bot: YuiDcBot):
         self.bot = bot
-        self.config = config
         self.am3.start()
         self.am4.start()
 
@@ -28,3 +26,8 @@ class am3am4(commands.Cog):
         guild = await self.bot.fetch_guild(69255840699256832)
         ch = await guild.fetch_channel(651043415009787905)
         await ch.send(f"朝の4時よ！これから走りに出るんでしょ？", file=File("resources/4am_jog.mp4"))
+
+
+async def setup(bot: YuiDcBot):
+    ids = [Object(id) for id in bot.config.GetRunServerID()]
+    await bot.add_cog(am3am4(bot), guilds=ids)
