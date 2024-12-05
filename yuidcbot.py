@@ -1,9 +1,8 @@
+from typing import Any
 import discord
 from discord.ext import commands
 from config import Config
 from os import listdir
-from discord.interactions import Interaction
-from discord import app_commands, Object
 
 
 class YuiDcBot(commands.Bot):
@@ -22,3 +21,9 @@ class YuiDcBot(commands.Bot):
             slash = await self.tree.sync(guild=discord.Object(id))
             print(f'已載入 {len(slash)} 個斜線指令')
         print(f'已經以 {self.user} 登入')
+
+    async def on_error(self, event_method: str, /, *args: Any, **kwargs: Any) -> None:
+        print("ERROR")
+        print(event_method)
+        print(args)
+        print(kwargs)

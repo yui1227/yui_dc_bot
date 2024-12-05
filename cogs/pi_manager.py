@@ -24,7 +24,7 @@ class pi_manager(commands.Cog):
     @app_commands.command(name='status', description="查看機器人狀態")
     async def status(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
-        embed = Embed(title='機器人狀態3')
+        embed = Embed(title='機器人狀態')
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         uptime = datetime.datetime.now()-datetime.datetime.fromtimestamp(psutil.boot_time())
         embed.add_field(name="機器人名稱", value=f"{self.bot.user.name}")
