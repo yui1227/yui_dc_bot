@@ -18,5 +18,5 @@ class Config:
     def GetRunServerID(self) -> list[int]:
         return self.setting["run_server"]
 
-    def GetRepostGuildChannelIdPair(self) -> list[list[dict[str, int]]]:
-        return self.setting["repost_guild_channel_pair"]
+    def GetRepostList(self) -> list[dict[str, int]]:
+        return self.setting["repost_list"]
