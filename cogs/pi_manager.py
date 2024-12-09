@@ -8,7 +8,7 @@ import datetime
 from yuidcbot import YuiDcBot
 
 
-class pi_manager(commands.Cog):
+class PiManager(commands.Cog):
     def __init__(self, bot: YuiDcBot):
         self.bot = bot
 
@@ -42,4 +42,4 @@ class pi_manager(commands.Cog):
 
 async def setup(bot: YuiDcBot):
     ids = [Object(id) for id in bot.config.GetRunServerID()]
-    await bot.add_cog(pi_manager(bot), guilds=ids)
+    await bot.add_cog(PiManager(bot), guilds=ids)

@@ -1,5 +1,5 @@
 .venv/
 __pycache__/
 secret.json
-run
+scheduled_message.json
 resources/

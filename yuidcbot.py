@@ -1,6 +1,6 @@
 from typing import Any
 import discord
-from  discord.ext import commands
+from discord.ext import commands
 from config import Config
 from os import listdir
 import traceback

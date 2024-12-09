@@ -1,0 +1,5 @@
+#!/bin/sh
+source ~/yui_dc_bot/.venv/bin/activate
+cd ~/yui_dc_bot
+.venv/bin/python ./main.py
+deactivate
