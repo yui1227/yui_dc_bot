@@ -1,8 +1,10 @@
+from typing import Callable
 from discord.ext import commands, tasks
 import datetime
 from discord import File, Object
+from discord.ext.tasks import LF, Loop
 from yuidcbot import YuiDcBot
-from discord.utils import MISSING
+# from discord.utils import MISSING
 from copy import deepcopy
 import json
 
@@ -13,14 +15,16 @@ class ScheduledMessage(commands.Cog):
         self.tz = datetime.timezone(datetime.timedelta(hours=8))
 
         # 根據外部檔案設定排程發送訊息
-        self.loop = []
+        self.loop: list[Loop[LF]] = []
         with open("scheduled_message.json") as f:
             self._data = json.load(f)
 
         for item in self._data:
             # 避免閉包引用問題
             temp = deepcopy(item)
+            time = datetime.time(**temp["time"], tzinfo=self.tz)
 
+            @tasks.loop(time=time)
             async def callback(copyitem=temp):
                 ch = self.bot.get_channel(copyitem["channel"])
                 if "file" in copyitem["data"]:
@@ -28,9 +32,9 @@ class ScheduledMessage(commands.Cog):
                                   file=File(copyitem["data"]["file"]))
                 else:
                     await ch.send(**copyitem["data"])
-            time = datetime.time(**temp["time"], tzinfo=self.tz)
-            self.loop.append(tasks.Loop[tasks.LF](
-                callback, MISSING, MISSING, MISSING, time, None, True, temp["name"]))
+            # self.loop.append(tasks.Loop[tasks.LF](
+            #     callback, MISSING, MISSING, MISSING, time, None, True, temp["name"]))
+            self.loop.append(callback)
 
         _ = [item.start() for item in self.loop]
 
