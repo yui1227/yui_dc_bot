@@ -1,5 +1,5 @@
 from typing import Any
-import discord
+from discord import Intents, Object, Message, User
 from discord.ext import commands
 from config import Config
 from os import listdir
@@ -20,7 +20,7 @@ class YuiDcBot(commands.Bot):
     ANIME_BASE_URL = "https://ani.gamer.com.tw/party.php"
 
     def __init__(self):
-        intents = discord.Intents.default()
+        intents = Intents.default()
         intents.message_content = True
         intents.members = True
         intents.presences = True
@@ -30,8 +30,8 @@ class YuiDcBot(commands.Bot):
         super().__init__("/", intents=intents)
 
     async def on_ready(self):
-        for id in self.config.GetRunServerID():
-            slash = await self.tree.sync(guild=discord.Object(id))
+        for id in self.config.run_server:
+            slash = await self.tree.sync(guild=Object(id))
             print(f'已載入 {len(slash)} 個斜線指令')
         print(f'已經以 {self.user} 登入')
 
@@ -43,19 +43,19 @@ class YuiDcBot(commands.Bot):
         if kwargs:
             print(kwargs)
 
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: Message):
         # 無視機器人訊息
         if message.author.bot:
             return
         # 私訊轉發給作者
         if message.guild is None:
-            user: discord.User = self.get_user(self.config.GetAuthorId())
+            user: User = self.get_user(self.config.author)
             await user.send(f"from {message.author.name}\n{message.content}")
             return
         # 某頻道本人訊息轉發到某頻道
         if any([message.content.startswith(baseurl) for baseurl in self.MESSAGE_REPOST_PATTERN]):
-            user_list = [obj for obj in self.config.GetRepostList(
-            ) if message.author.id == obj["author"] and message.channel.id == obj["from"]]
+            user_list = [obj for obj in self.config.repost_list if message.author.id ==
+                         obj["author"] and message.channel.id == obj["from"]]
             if any(user_list):
                 channel = self.get_channel(
                     user_list[0]["to"])

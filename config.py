@@ -4,19 +4,24 @@ import json
 class Config:
     def __init__(self):
         with open("secret.json", mode='r', encoding='utf-8') as f:
-            self.setting = json.load(f)
+            self._setting = json.load(f)
 
-    def GetPCMAC(self) -> str:
-        return self.setting["pc_mac"]
+    @property
+    def pc_mac(self) -> str:
+        return self._setting["pc_mac"]
 
-    def GetDcToken(self) -> str:
-        return self.setting["dc_token"]
+    @property
+    def dc_token(self) -> str:
+        return self._setting["dc_token"]
 
-    def GetAuthorId(self) -> int:
-        return self.setting["author"]
+    @property
+    def author(self) -> int:
+        return self._setting["author"]
 
-    def GetRunServerID(self) -> list[int]:
-        return self.setting["run_server"]
+    @property
+    def run_server(self) -> list[int]:
+        return self._setting["run_server"]
 
-    def GetRepostList(self) -> list[dict[str, int]]:
-        return self.setting["repost_list"]
+    @property
+    def repost_list(self) -> list[dict[str, int]]:
+        return self._setting["repost_list"]
