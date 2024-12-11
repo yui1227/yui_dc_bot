@@ -25,14 +25,17 @@ class YuiDcBot(commands.Bot):
         intents.members = True
         intents.presences = True
         self.config = Config()
+        self.list_cogs()
+        super().__init__("/", intents=intents)
+
+    def list_cogs(self):
         self.cog_list = [
             f"cogs.{cogName[:-3]}" for cogName in listdir("cogs") if cogName.endswith(".py")]
-        super().__init__("/", intents=intents)
 
     async def on_ready(self):
         for id in self.config.run_server:
             slash = await self.tree.sync(guild=Object(id))
-            print(f'已載入 {len(slash)} 個斜線指令')
+            print(f'已在 {slash[0].guild.name} 載入 {len(slash)} 個斜線指令')
         print(f'已經以 {self.user} 登入')
 
     async def on_error(self, event_method: str, /, *args: Any, **kwargs: Any):
