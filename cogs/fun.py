@@ -1,10 +1,16 @@
 from discord.ext import commands
 from yuidcbot import YuiDcBot
-from discord import Interaction, app_commands, File, Object
+from discord import Interaction, app_commands, File, Object, ui, ButtonStyle
 from asyncio import subprocess
 import io
 import json
 from random import choice
+
+
+class DeleteButton(ui.View):
+    @ui.button(label="刪除", style=ButtonStyle.red)
+    async def DeleteMessage(self, interaction: Interaction, button: ui.Button):
+        await interaction.message.delete()
 
 
 class Fun(commands.Cog):
@@ -23,7 +29,7 @@ class Fun(commands.Cog):
             await interaction.followup.send(f"ffmpeg error: {error.decode()}", ephemeral=False)
             return
         byteio = io.BytesIO(image_data)
-        await interaction.followup.send(file=File(byteio, filename="aot.jpg"), ephemeral=False)
+        await interaction.followup.send(file=File(byteio, filename="aot.jpg"), ephemeral=False, view=DeleteButton())
 
     @app_commands.command(name="random-million", description="抽一張百萬卡")
     async def random_million_card(self, interaction: Interaction):

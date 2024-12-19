@@ -74,5 +74,12 @@ class YuiDcBot(commands.Bot):
                     # 去除前面文字和最後的分號
                     find = find.replace("window.videoList = ", "")[:-1]
                     infojson: list = json.loads(find)
-                    await message.reply(f"""動畫派對: {infojson[0]["title"]}""", mention_author=False)
+                    queue_text = []
+                    for anime in infojson:
+                        link_text = f'[{anime["title"]}](<https://ani.gamer.com.tw/animeVideo.php?sn={anime["videoSn"]}>)\n'
+                        if anime["state"]=="playing":
+                            queue_text.append(f'▶{link_text}')
+                        else:
+                            queue_text.append(link_text)
+                    await message.reply(f"""動畫派對:\n{"".join(queue_text)}""", mention_author=False)
             return
