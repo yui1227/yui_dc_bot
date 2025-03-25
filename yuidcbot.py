@@ -55,8 +55,8 @@ class YuiDcBot(commands.Bot):
             user: User = self.get_user(self.config.author)
             await user.send(f"from {message.author.name}\n{message.content}")
             return
-        # 某頻道本人訊息轉發到某頻道
-        if any([message.content.startswith(baseurl) for baseurl in self.MESSAGE_REPOST_PATTERN]):
+        # 訊息轉發
+        if any([1 for baseurl in self.MESSAGE_REPOST_PATTERN if baseurl in message.content]):
             user_list = [obj for obj in self.config.repost_list if message.author.id ==
                          obj["author"] and message.channel.id == obj["from"]]
             if any(user_list):
