@@ -34,14 +34,17 @@ class Fun(commands.Cog):
 
     @app_commands.command(name="xkcd", description="給你一個xkcd漫畫，未輸入或是輸入錯誤編號則隨機一則")
     async def xkcd(self, interaction: Interaction, xkcd_id: Optional[int] = -1):
-        await interaction.response.defer(ephemeral=True)
+        if xkcd_id != -1:
+            await interaction.response.defer(ephemeral=False)
+        else:
+            await interaction.response.defer(ephemeral=True)
         async with aiohttp.request('GET', self.xkcd_apiurl) as resp1:
             all_meme: dict = await resp1.json()
             random_meme = all_meme.get(f"{xkcd_id}")
             if random_meme == None:
                 all_meme_list = [v for _, v in all_meme.items()]
                 random_meme = choice(all_meme_list)
-        embed = Embed(title=random_meme["title"],
+        embed = Embed(title=f'[{random_meme["id"]}]{random_meme["title"]}',
                       url=f"https://xkcd.tw/{random_meme['id']}",
                       description=random_meme['caption'])
         embed.set_image(url=f"https://xkcd.tw{random_meme['img_url']}")
