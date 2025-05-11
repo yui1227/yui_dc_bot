@@ -18,6 +18,8 @@ class ScheduledMessage(commands.Cog):
             self._data = json.load(f)
 
         for item in self._data:
+            if not item["on"]:
+                continue
             # 避免閉包引用問題
             temp = deepcopy(item)
             time = datetime.time(**temp["time"], tzinfo=self.tz)
