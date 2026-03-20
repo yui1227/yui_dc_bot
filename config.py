@@ -25,3 +25,7 @@ class Config:
     @property
     def repost_list(self) -> list[dict[str, int]]:
         return self._setting["repost_list"]
+
+    @property
+    def gemini(self) -> str:
+        return self._setting["gemini"]
