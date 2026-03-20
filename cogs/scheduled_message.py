@@ -14,7 +14,7 @@ class ScheduledMessage(commands.Cog):
 
         # 根據外部檔案設定排程發送訊息
         self.loop: list[Loop[LF]] = []
-        with open("scheduled_message.json") as f:
+        with open("scheduled_message.json", encoding="utf-8") as f:
             self._data = json.load(f)
 
         for item in self._data:

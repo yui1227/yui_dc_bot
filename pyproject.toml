@@ -1,0 +1,11 @@
+[project]
+name = "yui-dc-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "discord-py>=2.7.1",
+    "psutil>=7.2.2",
+    "wakeonlan>=3.1.0",
+]

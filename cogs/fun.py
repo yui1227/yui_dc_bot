@@ -17,20 +17,21 @@ class DeleteButton(ui.View):
 class Fun(commands.Cog):
     def __init__(self, bot: YuiDcBot):
         self.bot = bot
-        self.aot_ss_cmd = "ffmpeg -y -i $(~/yt-dlp -g g4zpC0WfNx4) -vframes 1 -f image2pipe -vcodec mjpeg pipe:1"
+        self.yt_video_id = ""
+        self.aot_ss_cmd = f"ffmpeg -y -i $(~/yt-dlp -g {self.yt_video_id}) -vframes 1 -f image2pipe -vcodec mjpeg pipe:1"
         self.xkcd_apiurl = "https://xkcd.tw/api/strips.json"
         self.xkcd_baseurl = "https://xkcd.tw/"
 
-    @app_commands.command(name="aot-screenshot", description="看巨人現在演到哪裡")
-    async def aot_screenshot(self, interaction: Interaction):
-        await interaction.response.defer(ephemeral=False)
-        proc = await subprocess.create_subprocess_shell(self.aot_ss_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        image_data, error = await proc.communicate()
-        if proc.returncode != 0:
-            await interaction.followup.send(f"ffmpeg error: {error.decode()}", ephemeral=False)
-            return
-        byteio = io.BytesIO(image_data)
-        await interaction.followup.send(file=File(byteio, filename="aot.jpg"), ephemeral=False, view=DeleteButton())
+    # @app_commands.command(name="jojo-screenshot", description="看jojo現在演到哪裡")
+    # async def jojo_screenshot(self, interaction: Interaction):
+    #     await interaction.response.defer(ephemeral=False)
+    #     proc = await subprocess.create_subprocess_shell(self.aot_ss_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #     image_data, error = await proc.communicate()
+    #     if proc.returncode != 0:
+    #         await interaction.followup.send(f"ffmpeg error: {error.decode()}", ephemeral=False)
+    #         return
+    #     byteio = io.BytesIO(image_data)
+    #     await interaction.followup.send(file=File(byteio, filename="aot.jpg"), ephemeral=False, view=DeleteButton())
 
     @app_commands.command(name="xkcd", description="給你一個xkcd漫畫，未輸入或是輸入錯誤編號則隨機一則")
     async def xkcd(self, interaction: Interaction, xkcd_id: Optional[int] = -1):
