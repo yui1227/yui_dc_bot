@@ -16,7 +16,7 @@ class GeminiFixedPromptCog(commands.Cog):
         # "將這張圖片轉換為吉卜力動漫風格"
         # "把這張圖片變成賽博龐克風格的城市"
         # "將圖片中的主角變成寫實風格"
-        self.HARDCODED_PROMPT = "將這張圖片轉換為冰天雪地的樣子，並且保持原圖的構圖和主體不變。"
+        self.HARDCODED_PROMPT = "將這張圖片轉換為冰天雪地的樣子，所有的東西都被冰凍起來的樣子。"
         # -------------------------------------
 
         # 1. 初始化 Gemini 客戶端
@@ -29,12 +29,17 @@ class GeminiFixedPromptCog(commands.Cog):
             name='冰起來', # 這是顯示在右鍵選單中的名字
             callback=self.generate_image_context_fixed
         )
-        # 將右鍵指令加入到 Bot 的指令樹中
-        self.bot.tree.add_command(self.ctx_menu)
+        # 將伺服器 ID 轉換為 discord.Object
+        guild_ids = [discord.Object(id) for id in self.bot.config.run_server]
+        # 加入 guilds 參數，這樣稍後你的 on_ready 裡面的 sync(guild=...) 才能正確同步它
+        self.bot.tree.add_command(self.ctx_menu, guilds=guild_ids)
 
     # 當 Cog 被卸載時，自動移除這個右鍵指令，避免錯誤
     async def cog_unload(self):
-        self.bot.tree.remove_command(self.ctx_menu.name, type=self.ctx_menu.type)
+        # 卸載模組時，也要從特定的伺服器中把這個右鍵指令移除，避免殘留
+        guild_ids = [discord.Object(id) for id in self.bot.config.run_server]
+        for guild in guild_ids:
+            self.bot.tree.remove_command(self.ctx_menu.name, type=self.ctx_menu.type, guild=guild)
 
     # 右鍵指令的實際執行邏輯
     async def generate_image_context_fixed(self, interaction: discord.Interaction, message: discord.Message):
@@ -68,7 +73,7 @@ class GeminiFixedPromptCog(commands.Cog):
             # 5. 呼叫 Gemini API (使用非同步 .aio 客戶端)
             # 使用 gemini-2.0-flash 模型，支援原生的 IMAGE 輸出
             response = await self.ai_client.aio.models.generate_content(
-                model='gemini-2.0-flash', 
+                model='gemini-3.1-flash-image-preview', 
                 contents=[
                     types.Part.from_bytes(data=image_bytes, mime_type=mime_type), # 輸入的原圖
                     self.HARDCODED_PROMPT # 使用我們寫死的固定提示詞
